@@ -30,7 +30,7 @@
 
             controls = new THREE.OrbitControls(camera, renderer.domElement);
             controls.autoRotate = true;
-            controls.autoRotateSpeed = 4;
+            controls.autoRotateSpeed = -4;
             // controls.addEventListener('change', renderer);
             controls.update();
 
@@ -46,19 +46,19 @@
             // scene.add(directionaLight);
 
             light = new THREE.PointLight(0xc4c4c4, 0.5);
-            light.position.set(0,300,500);
+            light.position.set(0,3000,5000);
             scene.add(light);
             
             light2 = new THREE.PointLight(0xc4c4c4, 0.5);
-            light2.position.set(500,100,0);
+            light2.position.set(5000,1000,00);
             scene.add(light2);
 
             light3 = new THREE.PointLight(0xc4c4c4, 0.5);
-            light3.position.set(0,100,-500);
+            light3.position.set(00,1000,-5000);
             scene.add(light3);
 
             light4 = new THREE.PointLight(0xc4c4c4, 0.5);
-            light4.position.set(-500,300,500);
+            light4.position.set(-5000,3000,5000);
             scene.add(light4);
 
 
@@ -68,7 +68,7 @@
             let loader = new THREE.GLTFLoader();
             loader.load('TeslaS/scene.gltf', function(gltf){
                 car = gltf.scene.children[0];
-                // car.scale.set(0.5,0.5,0.5);
+                car.scale.set(2,2,2);
                 scene.add(gltf.scene);
                 animate();
             }, undefined, function ( error ) {
@@ -80,9 +80,21 @@
 
         }
 
+        function spinTeslaWheels(time) {
+            time *= 0.003 // convert to seconds
 
-        function animate() {
+            if (car.getObjectByName('wheel002')) {
+                car.getObjectByName('wheel002').rotation.x = time;
+            }
+
+            if (car.getObjectByName('wheel001')) {
+                car.getObjectByName('wheel003').rotation.x = time;
+            }
+        }
+
+        function animate(time) {
             requestAnimationFrame(animate);
+            spinTeslaWheels(time);
             controls.update();
             renderer.render(scene, camera);
         }
@@ -96,6 +108,24 @@
             render()
         }
         window.addEventListener('resize', onWindowResize, false)
+
+
+        /* HELPER FUNCTIONS */
+
+        function dumpObject(obj, lines = [], isLast = true, prefix = '') {
+            const localPrefix = isLast ? '└─' : '├─';
+            lines.push(`${prefix}${prefix ? localPrefix : ''}${obj.name || 'no-name'} [${obj.type}]`);
+            const newPrefix = prefix + (isLast ? '  ' : '│ ');
+            const lastNdx = obj.children.length - 1;
+            obj.children.forEach((child, ndx) => {
+                const isLast = ndx === lastNdx;
+                dumpObject(child, lines, isLast, newPrefix);
+            });
+            return lines;
+        }
+
+
+        
 
     </script>
 </body>
